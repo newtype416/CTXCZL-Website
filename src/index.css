@@ -292,6 +292,15 @@
   pointer-events: none;
 }
 
+/* Keep the desktop hero clip in the media cache before the visitor enters. */
+.hero-video-preload {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* Landing page transition */
 .landing-enter {
   animation: fadeOutUp 0.8s ease-in-out forwards;

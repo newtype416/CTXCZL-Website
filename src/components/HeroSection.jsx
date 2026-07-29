@@ -1,33 +1,33 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { assetUrl } from '../utils/assets';
  
-export default function HeroSection() {
+export default function HeroSection({ playWithSound = false }) {
   const [muted, setMuted] = useState(true);
   const [showAudioBtn, setShowAudioBtn] = useState(false);
   const videoRef = useRef(null);
   const LOOP_START = 3.88;
  
-  useEffect(() => {
+  useLayoutEffect(() => {
     setShowAudioBtn(true);
     const video = videoRef.current;
     if (!video) return;
 
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
     video.playsInline = true;
     video.setAttribute('webkit-playsinline', 'true');
     video.setAttribute('x5-playsinline', 'true');
 
-    // Mobile browsers keep muted inline video inside the page. Sound can still be enabled deliberately.
-    video.muted = isMobile;
+    // Start muted so autoplay can begin on the first rendered frame.
+    // Desktop can then restore audio without delaying the visual playback.
+    video.muted = true;
+    setMuted(true);
     video.play().then(() => {
-      setMuted(video.muted);
-    }).catch(() => {
-      // Keep video playback available when a browser blocks sound autoplay.
-      video.muted = true;
-      setMuted(true);
-      video.play().catch(() => {});
-    });
-  }, []);
+      if (playWithSound) {
+        video.muted = false;
+        setMuted(false);
+      }
+    }).catch(() => {});
+  }, [playWithSound]);
+
  
   const handleVideoEnded = () => {
     const video = videoRef.current;
@@ -48,7 +48,7 @@ export default function HeroSection() {
   return (
     <section id="hero" className="hero-section relative h-screen w-full overflow-hidden">
       {/* Video background with sound enabled after entering the site. */}
-      <video preload="metadata"
+      <video preload="auto"
         ref={videoRef}
         autoPlay
         muted={muted}
@@ -73,7 +73,7 @@ export default function HeroSection() {
         <button
           onClick={toggleAudio}
           className="absolute bottom-8 right-8 z-20 w-12 h-12 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/25 transition-all duration-300 border border-white/20 hover:scale-105"
-          title={muted ? '开启音乐' : '关闭音乐'}
+          title={muted ? '????' : '????'}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             {muted ? (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import LandingPage from './components/LandingPage';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -21,6 +22,8 @@ export default function App() {
   const [showArrivalLetter, setShowArrivalLetter] = useState(false);
   const [showLetterEnvelope, setShowLetterEnvelope] = useState(false);
   const [openLetterDirectly, setOpenLetterDirectly] = useState(false);
+  const [playHeroWithSound, setPlayHeroWithSound] = useState(false);
+  const [shouldPreloadHero] = useState(() => window.matchMedia('(min-width: 768px)').matches);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 800);
@@ -30,11 +33,22 @@ export default function App() {
 
 
   const handleEnter = () => {
-    setShowLanding(false);
-    setEntered(true);
-    setShowLetterEnvelope(false);
-    setOpenLetterDirectly(false);
-    setShowArrivalLetter(true);
+    const playWithSound = !window.matchMedia('(max-width: 767px)').matches;
+    const enter = () => {
+      setShowLanding(false);
+      setEntered(true);
+      setShowLetterEnvelope(false);
+      setOpenLetterDirectly(false);
+      setShowArrivalLetter(true);
+      setPlayHeroWithSound(playWithSound);
+    };
+
+    // Mount the video during the click so desktop browsers permit sound playback.
+    if (playWithSound) {
+      flushSync(enter);
+    } else {
+      enter();
+    }
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
@@ -80,6 +94,19 @@ export default function App() {
         </div>
       </div>
 
+      {!entered && shouldPreloadHero && (
+        <video
+          aria-hidden="true"
+          className="hero-video-preload"
+          muted
+          playsInline
+          preload="auto"
+          tabIndex={-1}
+        >
+          <source src={assetUrl('/video/hero.mp4?v=media-optimized')} type="video/mp4" />
+        </video>
+      )}
+
       {showLanding && !entered && (
         <div className={`relative z-10 ${!entered ? '' : 'landing-enter'}`}>
           <LandingPage onEnter={handleEnter} />
@@ -90,7 +117,7 @@ export default function App() {
         <>
           <Navbar onBack={handleBack} />
           <div className={`relative z-10 ${entered ? 'main-enter' : ''}`}>
-            <HeroSection />
+            <HeroSection playWithSound={playHeroWithSound} />
             <AboutSection />
             <TvProgramSection />
             <VarietyShowSection />

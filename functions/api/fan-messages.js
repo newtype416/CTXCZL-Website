@@ -1,5 +1,5 @@
 ﻿const MAX_MESSAGE_LENGTH = 500;
-const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_WINDOW_MS = 30_000;
 const MESSAGE_LIMIT = 200;
 
 function json(data, status = 200) {
@@ -23,24 +23,6 @@ async function hash(value) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-async function verifyTurnstile(token, request, env) {
-  if (!env.TURNSTILE_SECRET_KEY) return { ok: false, error: 'Message service is not configured.' };
-  if (!token) return { ok: false, error: 'Please complete the human verification.' };
-
-  const formData = new FormData();
-  formData.append('secret', env.TURNSTILE_SECRET_KEY);
-  formData.append('response', token);
-  const remoteIp = request.headers.get('CF-Connecting-IP');
-  if (remoteIp) formData.append('remoteip', remoteIp);
-
-  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    body: formData,
-  });
-  const result = await response.json();
-  return result.success ? { ok: true } : { ok: false, error: 'Human verification failed. Please try again.' };
 }
 
 async function enforceRateLimit(request, env) {
@@ -92,9 +74,6 @@ export async function onRequest(context) {
   if (!content || content.length > MAX_MESSAGE_LENGTH) {
     return json({ error: `Message must be between 1 and ${MAX_MESSAGE_LENGTH} characters.` }, 400);
   }
-
-  const verification = await verifyTurnstile(body.turnstileToken, request, env);
-  if (!verification.ok) return json({ error: verification.error }, 400);
 
   const rateLimit = await enforceRateLimit(request, env);
   if (!rateLimit.ok) return json({ error: rateLimit.error }, 429);
