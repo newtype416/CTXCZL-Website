@@ -1,0 +1,15 @@
+.pixel-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.pixel-card__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}

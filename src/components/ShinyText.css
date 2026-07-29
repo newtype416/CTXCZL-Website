@@ -1,0 +1,26 @@
+.shiny-text {
+  display: inline-block;
+}
+
+.shiny-text--wave .shiny-text__char {
+  display: inline-block;
+}
+
+.shiny-text--wave:hover .shiny-text__char {
+  animation: shiny-text-wave 620ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--wave-delay) both;
+}
+
+@keyframes shiny-text-wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-7px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text--wave:hover .shiny-text__char {
+    animation: none;
+  }
+}

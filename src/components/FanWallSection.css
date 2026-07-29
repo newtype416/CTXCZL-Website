@@ -1,0 +1,33 @@
+.danmaku-wall { position: relative; width: 100%; height: 300px; overflow: hidden; border: 1px solid rgba(255,255,255,.8); border-radius: 8px; background: rgba(255,255,255,.48); isolation: isolate; }
+.danmaku-item { position: absolute; z-index: 1; top: calc(5% + var(--lane) * 7.7%); left: 100%; display: block; max-width: min(80vw, 720px); overflow: hidden; color: var(--danmaku-color); font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif; font-size: clamp(13px, 1.35vw, 18px); font-weight: 700; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 1px 0 rgba(255,255,255,.9); animation: danmaku-scroll var(--duration) linear var(--delay) infinite; will-change: transform; pointer-events: auto; }
+.danmaku-item:hover { z-index: 2; animation-play-state: paused; filter: brightness(1.05) drop-shadow(0 3px 7px rgba(183, 77, 31, .22)); }
+.danmaku-item--latest { z-index: 2; padding: 5px 11px; border: 1.5px solid rgba(255,255,255,.96); border-radius: 999px; background: rgba(255,255,255,.16); box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 4px 14px rgba(153, 71, 29, .14); }
+
+.message-input-glow { position: relative; flex: 1; padding: 2px; overflow: hidden; border-radius: 22px; isolation: isolate; }
+.message-input-glow::before { position: absolute; z-index: -1; inset: -75%; background: conic-gradient(from 0deg, transparent 0 40%, #ffc17d 48%, #fff3d7 50%, #ff7e2e 53%, transparent 60% 100%); content: ''; animation: fanwall-glow-orbit 4s linear infinite; }
+.message-input { display: block; width: 100%; height: 48px; min-height: 48px; padding: 11px 20px; border: 0; border-radius: 20px; outline: 0; resize: none; overflow-y: auto; background: #fff9f0; color: #4e2d1d; font-size: 14px; line-height: 24px; }
+.message-input::placeholder { color: #8b6955; opacity: 1; }
+.message-input:focus { box-shadow: inset 0 0 0 1px rgba(239, 124, 52, .48); }
+.fanwall-effects { position: absolute; z-index: 10; inset: 0; pointer-events: none; overflow: visible; }
+.firework-launch { position: absolute; left: var(--start-x); top: var(--start-y); width: 1px; height: 1px; }
+.attachment-flight { position: absolute; width: 18px; height: 24px; margin: -12px 0 0 -9px; animation: attachment-rise 2s cubic-bezier(.16,1,.3,1) forwards; }
+.attachment-flight__heart { position: absolute; inset: 0; color: #ff7454; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; line-height: 24px; text-align: center; text-shadow: 0 0 8px #fff0ba, 0 0 18px rgba(239, 85, 45, .76); transform: rotate(-8deg); }
+.attachment-flight__trail { position: absolute; z-index: -1; top: 19px; left: 8px; width: 2px; height: 58px; background: linear-gradient(to top, transparent, rgba(255,227,163,.88)); filter: blur(.2px); }
+.firework-cluster { position: absolute; top: calc(var(--target-y) - var(--start-y)); width: 1px; height: 1px; opacity: 0; }
+.firework-launch--burst .attachment-flight { animation: none; opacity: 0; }
+.firework-launch--burst .firework-cluster { opacity: 1; }
+.firework-flash { position: absolute; width: 24px; height: 24px; margin: -12px; border-radius: 50%; background: #fff7d6; box-shadow: 0 0 18px 8px #fff0ba, 0 0 60px 24px rgba(255, 154, 70, .66); animation: firework-flash .42s ease-out both; }
+.firework-spark { position: absolute; color: var(--burst-color); font-family: Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 1; text-shadow: 0 0 7px var(--burst-color), 0 0 13px rgba(255, 237, 184, .72); opacity: 0; transform-origin: 50% 100%; }
+.firework-spark--secondary { font-size: 13px; }
+.firework-smoke { position: absolute; width: 28px; height: 28px; margin: -14px; border-radius: 50%; background: radial-gradient(circle, rgba(251, 190, 126, .32), rgba(189, 107, 69, 0) 72%); opacity: 0; filter: blur(2px); }
+.firework-launch--burst .firework-spark { animation: firework-burst 2s cubic-bezier(.12,.72,.21,1) var(--burst-delay) both; }
+.firework-launch--burst .firework-smoke { animation: firework-smoke 1.7s ease-out var(--smoke-delay) both; }
+@keyframes fanwall-glow-orbit { to { transform: rotate(-360deg); } }
+@keyframes danmaku-scroll { from { transform: translateX(0); } to { transform: translateX(calc(-100vw - 100%)); } }
+@keyframes attachment-rise { from { transform: translateY(0) scale(.75) rotate(-8deg); opacity: 0; } 12% { opacity: 1; } to { transform: translateY(calc(var(--target-y) - var(--start-y))) scale(1) rotate(22deg); opacity: 1; } }
+@keyframes firework-flash { 0% { opacity: 0; transform: scale(.15); } 18% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0; transform: scale(2.8); } }
+@keyframes firework-burst { 0% { opacity: 0; transform: translate(var(--cluster-x), var(--cluster-y)) rotate(var(--burst-angle)) translateY(0) scale(.5); } 9% { opacity: 1; } 62% { opacity: .82; } 100% { opacity: 0; transform: translate(var(--cluster-x), var(--cluster-y)) rotate(var(--burst-angle)) translateY(calc(var(--burst-distance) * -1)) scale(.25); } }
+@keyframes firework-smoke { 0% { opacity: 0; transform: rotate(var(--smoke-angle)) translateX(0) scale(.35); } 18% { opacity: .6; } 100% { opacity: 0; transform: rotate(var(--smoke-angle)) translateX(var(--smoke-distance)) scale(2.5); } }
+@media (min-width: 768px) { .danmaku-wall { height: 440px; } }
+@media (max-width: 640px) { .danmaku-item { top: calc(5% + var(--lane) * 7.7%); max-width: 72vw; font-size: 12px; } .message-input { min-width: 0; } }
+@media (prefers-reduced-motion: reduce) { .danmaku-item, .message-input-glow::before { animation: none; } .fanwall-effects { display: none; } }

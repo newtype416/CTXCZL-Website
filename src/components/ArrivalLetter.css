@@ -1,0 +1,342 @@
+.arrival-letter {
+  --arrival-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --arrival-plane-half-width: clamp(64px, 7.5vw, 115px);
+  --arrival-plane-half-height: clamp(44px, 5.17vw, 79px);
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.arrival-letter__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 20, 28, 0.42);
+  opacity: 0;
+}
+
+.arrival-letter--opening,
+.arrival-letter--closing { pointer-events: auto; }
+
+.arrival-letter__scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.arrival-letter__plane {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(128px, 15vw, 230px);
+  aspect-ratio: 1.45;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  filter: drop-shadow(0 18px 14px rgba(0, 0, 0, 0.25));
+  opacity: 1;
+  transform: translate3d(-50%, -50%, 0);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.arrival-letter__plane:disabled { cursor: default; }
+
+.arrival-letter__dismiss {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  color: #ffffff;
+  background: rgba(20, 25, 31, 0.42);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 1.45rem;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(
+    calc(-50% + var(--arrival-plane-half-width) + 0.35rem),
+    calc(-50% - var(--arrival-plane-half-height) - 0.35rem),
+    0
+  ) scale(0.9);
+  transition: opacity 220ms var(--arrival-ease), transform 220ms var(--arrival-ease), background 180ms ease;
+}
+
+.arrival-letter__dismiss:hover { background: rgba(20, 25, 31, 0.62); }
+
+.arrival-letter--ready .arrival-letter__dismiss {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(
+    calc(-50% + var(--arrival-plane-half-width) + 0.35rem),
+    calc(-50% - var(--arrival-plane-half-height) - 0.35rem),
+    0
+  ) scale(1);
+}
+
+.arrival-letter__wing,
+.arrival-letter__fold {
+  position: absolute;
+  inset: 0;
+}
+
+.arrival-letter__wing--left {
+  background: #f8f2e9;
+  clip-path: polygon(0 5%, 100% 48%, 24% 100%);
+}
+
+.arrival-letter__wing--right {
+  background: #e3d6c3;
+  clip-path: polygon(0 5%, 100% 48%, 24% 100%);
+  transform: scaleX(-1);
+}
+
+.arrival-letter__fold {
+  background: #fffaf2;
+  clip-path: polygon(0 5%, 100% 48%, 42% 63%);
+}
+
+.arrival-letter__plane-prompt {
+  position: absolute;
+  top: calc(100% + 1.25rem);
+  left: 50%;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(20, 25, 31, 0.32);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.16);
+  font-family: "Noto Sans SC", system-ui, sans-serif;
+  font-size: clamp(0.72rem, 1.2vw, 0.86rem);
+  letter-spacing: 0.12em;
+  line-height: 1;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-3px);
+  white-space: nowrap;
+}
+
+.arrival-letter__paper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(84vw, 460px);
+  aspect-ratio: 1365 / 2048;
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+  color: #372e28;
+  background: #fff url('/images/birthday-letter.jpg') center / cover no-repeat;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0) scale(0.18) rotate(-8deg);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.arrival-letter__message {
+  position: relative;
+  transform: translateY(-20px);
+  z-index: 1;
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0 11.5%;
+  padding: 28% 0 27%;
+  overflow-y: auto;
+  color: #4c3b35;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(0.64rem, 1.15vw, 0.82rem);
+  font-weight: 400;
+  line-height: 1.62;
+  letter-spacing: 0.035em;
+  text-align: left;
+  text-indent: 2em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.arrival-letter__message p {
+  margin: 0 0 0.8em;
+  opacity: 0;
+  transform: translateY(9px);
+}
+
+.arrival-letter__message p:last-child { margin-bottom: 0; }
+
+.arrival-letter__close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  z-index: 2;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #763a43;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  font-size: 1.55rem;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.arrival-letter__close:hover { color: #4e252c; background: rgba(255, 255, 255, 0.94); }
+
+.arrival-letter__close:focus-visible,
+.arrival-letter__dismiss:focus-visible,
+.arrival-letter__plane:focus-visible,
+.letter-envelope-launcher:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.arrival-letter--arriving .arrival-letter__plane {
+  animation: arrival-plane-enter 3000ms var(--arrival-ease) forwards;
+}
+
+.arrival-letter--ready .arrival-letter__plane {
+  cursor: pointer;
+  pointer-events: auto;
+  animation: arrival-plane-hover 2600ms ease-in-out infinite;
+}
+
+.arrival-letter--ready .arrival-letter__plane:hover { filter: drop-shadow(0 22px 18px rgba(0, 0, 0, 0.3)); }
+
+.arrival-letter--ready .arrival-letter__plane-prompt {
+  animation: arrival-prompt-pulse 1500ms ease-in-out infinite;
+}
+
+.arrival-letter--opening .arrival-letter__backdrop {
+  animation: arrival-backdrop-in 420ms var(--arrival-ease) forwards;
+}
+
+.arrival-letter--opening .arrival-letter__plane {
+  animation: arrival-plane-fold 560ms var(--arrival-ease) 120ms forwards;
+}
+
+.arrival-letter--opening .arrival-letter__paper {
+  pointer-events: auto;
+  animation: arrival-paper-unfold 720ms var(--arrival-ease) 320ms forwards;
+}
+
+.arrival-letter--opening .arrival-letter__message p {
+  animation: arrival-letter-line-in 1760ms var(--arrival-ease) forwards;
+}
+
+.arrival-letter--opening .arrival-letter__close {
+  animation: arrival-close-in 280ms var(--arrival-ease) 980ms forwards;
+}
+
+.arrival-letter--closing .arrival-letter__backdrop {
+  opacity: 1;
+  animation: arrival-backdrop-out 420ms ease forwards;
+}
+
+.arrival-letter--closing .arrival-letter__paper {
+  animation: arrival-paper-fold-up 460ms var(--arrival-ease) forwards;
+}
+
+.arrival-letter--closing .arrival-letter__plane,
+.arrival-letter--direct-open.arrival-letter--opening .arrival-letter__plane {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes arrival-plane-enter {
+  0% { transform: translate3d(calc(-50% - 105vw), calc(-50% - 68vh), 0) rotate(16deg) scale(0.8); }
+  72% { transform: translate3d(calc(-50% + 3vw), calc(-50% + 1.5vh), 0) rotate(-3deg) scale(1.04); }
+  100% { transform: translate3d(-50%, -50%, 0) rotate(0) scale(1); }
+}
+
+@keyframes arrival-plane-hover {
+  0%, 100% { transform: translate3d(-50%, calc(-50% - 7px), 0) rotate(-2deg); }
+  50% { transform: translate3d(-50%, calc(-50% + 7px), 0) rotate(2deg); }
+}
+
+@keyframes arrival-prompt-pulse {
+  0%, 100% { opacity: 0.72; transform: translateX(-50%) translateY(-3px) scale(0.98); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.04); }
+}
+
+@keyframes arrival-backdrop-in { to { opacity: 1; } }
+@keyframes arrival-backdrop-out { to { opacity: 0; } }
+
+@keyframes arrival-plane-fold {
+  0% { opacity: 1; transform: translate3d(-50%, -50%, 0) rotate(0) scale(1); }
+  100% { opacity: 0; transform: translate3d(-50%, -50%, 0) rotateY(80deg) scale(0.16); }
+}
+
+@keyframes arrival-paper-unfold {
+  0% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.18) rotate(-8deg); }
+  58% { opacity: 1; transform: translate3d(-50%, -50%, 0) scale(1.025) rotate(0.4deg); }
+  100% { opacity: 1; transform: translate3d(-50%, -50%, 0) scale(1) rotate(0); }
+}
+
+@keyframes arrival-letter-line-in { to { opacity: 1; transform: translateY(0); } }
+@keyframes arrival-close-in { to { opacity: 1; transform: scale(1); } }
+
+@keyframes arrival-paper-fold-up {
+  0% { opacity: 1; transform: translate3d(-50%, -50%, 0) scale(1) rotate(0); }
+  100% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.17) rotate(8deg); }
+}
+
+@keyframes arrival-plane-return {
+  0% { opacity: 0; transform: translate3d(-50%, -50%, 0) rotateY(80deg) scale(0.16); }
+  45% { opacity: 1; transform: translate3d(-50%, -50%, 0) rotate(0) scale(1); }
+  100% { opacity: 0; transform: translate3d(calc(-50% + 10vw), calc(-50% - 7vh), 0) rotate(-12deg) scale(0.72); }
+}
+
+.letter-envelope-launcher {
+  position: fixed;
+  top: calc(76px + 0.75rem);
+  right: 1.25rem;
+  z-index: 90;
+  display: grid;
+  width: 3.35rem;
+  height: 2.65rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.65rem;
+  color: #ffffff;
+  background: transparent;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  font-size: 1.55rem;
+  line-height: 1;
+  animation: letter-envelope-in 420ms var(--arrival-ease) both;
+}
+
+.letter-envelope-launcher:hover { transform: scale(1.06) rotate(-3deg); }
+
+@keyframes letter-envelope-in {
+  from { opacity: 0; transform: translate3d(1.2rem, 0, 0) scale(0.82); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .arrival-letter__paper { width: min(88vw, 410px); }
+  .arrival-letter__dismiss { width: 2rem; height: 2rem; }
+  .letter-envelope-launcher { right: 0.9rem; width: 3.05rem; height: 2.4rem; top: calc(64px + 0.5rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrival-letter__plane,
+  .arrival-letter__paper,
+  .arrival-letter__backdrop,
+  .arrival-letter__message p,
+  .arrival-letter__close,
+  .letter-envelope-launcher {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+
+  .arrival-letter--ready .arrival-letter__plane-prompt { animation: none; opacity: 1; }
+}

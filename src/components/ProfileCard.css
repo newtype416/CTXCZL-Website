@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+
+.profile-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --hint-x: 50%;
+  --hint-y: 50%;
+  position: relative;
+  width: 250px;
+  height: 320px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 24px;
+  background: #1a1512;
+  box-shadow: 0 18px 40px rgba(96, 47, 20, 0.22);
+  transform: perspective(800px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  isolation: isolate;
+}
+
+.profile-card:hover {
+  box-shadow: 0 26px 54px rgba(96, 47, 20, 0.32);
+}
+
+.profile-card__hover-hint {
+  position: absolute;
+  top: var(--hint-y);
+  left: var(--hint-x);
+  z-index: 1;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  transform: translate3d(-50%, -35%, 28px) scale(0.9);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.profile-card:hover .profile-card__hover-hint {
+  opacity: 1;
+  transform: translate3d(-50%, -50%, 28px) scale(1);
+}
+
+.profile-card__avatar,
+.profile-card__wash,
+.profile-card__glow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-card__avatar {
+  z-index: -3;
+  object-fit: cover;
+  transform: scale(1.8);
+  transition: transform 260ms ease;
+}
+
+.profile-card:hover .profile-card__avatar {
+  transform: scale(1.88);
+}
+
+.profile-card--normal .profile-card__avatar {
+  transform: scale(1);
+}
+
+.profile-card--normal:hover .profile-card__avatar {
+  transform: scale(1.06);
+}
+
+.profile-card__wash {
+  z-index: -2;
+  background: linear-gradient(180deg, rgba(17, 12, 10, 0.2), rgba(17, 12, 10, 0.08) 35%, rgba(17, 12, 10, 0.86));
+}
+
+.profile-card__glow {
+  z-index: -1;
+  background: radial-gradient(circle at var(--glow-x) var(--glow-y), var(--behind-glow), transparent 42%);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.profile-card__topline,
+.profile-card__bottomline {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  transform: translateZ(24px);
+}
+
+.profile-card__topline {
+  top: auto;
+  bottom: 18px;
+}
+
+.profile-card__bottomline {
+  bottom: 18px;
+  align-items: flex-end;
+}
+
+.profile-card__identity {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.profile-card__mini-avatar {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-card__identity strong,
+.profile-card__identity span {
+  display: block;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+.profile-card__identity strong {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-card__identity span,
+.profile-card__platform,
+.profile-card__bottomline p {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.profile-card__platform {
+  max-width: 86px;
+  text-align: right;
+}
+
+.profile-card__bottomline h3,
+.profile-card__bottomline p {
+  margin: 0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+.profile-card__bottomline h3 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.profile-card__arrow {
+  font-size: 24px;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .profile-card {
+    width: 100%;
+    height: 220px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-card,
+  .profile-card__avatar {
+    transition: none;
+  }
+}
+
+
+/* 3D Card Flip */
+.profile-card-scene {
+  perspective: 1000px;
+  width: 250px;
+  height: 320px;
+  cursor: pointer;
+}
+.profile-card-flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.profile-card-flipper.is-flipped {
+  transform: rotateY(180deg);
+}
+.profile-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.profile-card-front {
+  z-index: 2;
+}
+.profile-card-back {
+  transform: rotateY(180deg);
+  background: #2a2a2a;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.profile-card-back-text {
+  font-family: "Ma Shan Zheng", cursive;
+  color: white;
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.4;
+}
+
+
+@media (max-width: 768px) {
+  .profile-card-scene {
+    width: 100%;
+    height: 220px;
+  }
+}
+
+
+@keyframes flipIn {
+  0% {
+    transform: perspective(1000px) rotateY(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: perspective(1000px) rotateY(0deg);
+    opacity: 1;
+  }
+}

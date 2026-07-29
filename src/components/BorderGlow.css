@@ -1,0 +1,63 @@
+.border-glow {
+  --border-edge: 0;
+  --border-angle: 45deg;
+  position: relative;
+  border-radius: var(--border-radius);
+  isolation: isolate;
+}
+
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 3;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--border-edge);
+  background:
+    linear-gradient(transparent, transparent) padding-box,
+    var(--border-gradient-5) border-box,
+    var(--border-gradient-5) border-box,
+    var(--border-gradient-5) border-box,
+    var(--border-gradient-5) border-box,
+    var(--border-gradient-5) border-box,
+    var(--border-gradient-5) border-box,
+    var(--border-gradient-5) border-box;
+  -webkit-mask: 
+    conic-gradient(from var(--border-angle), #000 0 var(--cone-spread), transparent calc(var(--cone-spread) + 14%), transparent calc(100% - var(--cone-spread) - 14%), #000 calc(100% - var(--cone-spread))),
+    radial-gradient(ellipse at center, transparent calc(100% - 10px), #000 calc(100% - 10px));
+  -webkit-mask-composite: source-in;
+  mask: 
+    conic-gradient(from var(--border-angle), #000 0 var(--cone-spread), transparent calc(var(--cone-spread) + 14%), transparent calc(100% - var(--cone-spread) - 14%), #000 calc(100% - var(--cone-spread))),
+    radial-gradient(ellipse at center, transparent calc(100% - 50px), #000 calc(100% - 10px));
+  mask-composite: intersect;
+  transition: opacity 220ms ease-out;
+}
+
+.border-glow__light {
+  position: absolute;
+  inset: calc(var(--glow-radius) * -1);
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: calc(var(--border-edge) * 0.92);
+  transition: opacity 220ms ease-out;
+  mask: 
+    radial-gradient(ellipse at center, transparent calc(100% - var(--glow-radius) - 50px), #000 calc(100% - var(--glow-radius) - 10px));
+}
+
+.border-glow__light::before {
+  content: '';
+  position: absolute;
+  inset: var(--glow-radius);
+  border-radius: inherit;
+  box-shadow: 0 0 4px var(--glow-color), 0 0 14px var(--glow-color), 0 0 28px var(--glow-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .border-glow::before,
+  .border-glow__light {
+    transition: none;
+  }
+}
