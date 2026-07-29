@@ -5,3 +5,7 @@ dist/
 .*-verify*/
 .edge-mobile-*/
 mobile-*.png
+
+.env.local
+.dev.vars
+workers/fan-messages/.wrangler/

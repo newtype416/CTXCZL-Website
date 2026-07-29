@@ -1,10 +1,59 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ScrollReveal from './ScrollReveal';
 import SplitText from './SplitText';
 import './FanWallSection.css';
 
 const DANMAKU_COLORS = ['#b63f1d', '#d9571f', '#e96d21', '#f28b26', '#f7ad32', '#cf4a24'];
 const DANMAKU_LANES = 12;
+
+const FAN_MESSAGES_API_URL = (import.meta.env.VITE_FAN_MESSAGES_API_URL || '/api/fan-messages').replace(/\/$/, '');
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '';
+const USES_HOSTED_FAN_API = Boolean(import.meta.env.VITE_FAN_MESSAGES_API_URL);
+
+function TurnstileWidget({ siteKey, resetKey, onToken, onError }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!siteKey || !containerRef.current) return undefined;
+
+    let widgetId;
+    let cancelled = false;
+    const render = () => {
+      if (cancelled || !window.turnstile || !containerRef.current) return;
+      widgetId = window.turnstile.render(containerRef.current, {
+        sitekey: siteKey,
+        theme: 'light',
+        callback: onToken,
+        'error-callback': onError,
+        'expired-callback': () => onToken(''),
+      });
+    };
+
+    if (window.turnstile) {
+      render();
+    } else {
+      let script = document.querySelector('script[data-turnstile-api]');
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.dataset.turnstileApi = 'true';
+        document.head.appendChild(script);
+      }
+      script.addEventListener('load', render, { once: true });
+      script.addEventListener('error', onError, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      if (widgetId !== undefined && window.turnstile) window.turnstile.remove(widgetId);
+    };
+  }, [onError, onToken, resetKey, siteKey]);
+
+  if (!siteKey) return null;
+  return <div ref={containerRef} className="turnstile-widget" aria-label="Human verification" />;
+}
 
 function DanmakuWall({ messages, wallRef }) {
   return (
@@ -77,28 +126,36 @@ function ParticleFlight({ flight }) {
 export default function FanWallSection() {
   const [messages, setMessages] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [flight, setFlight] = useState(null);
   const effectsRootRef = useRef(null);
   const danmakuRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    fetch('/api/fan-messages')
-      .then((response) => response.ok ? response.json() : Promise.reject())
-      .then(({ messages: savedMessages }) => {
-        if (savedMessages?.length) {
-          setMessages(savedMessages);
-        }
-      })
-      .catch(() => undefined);
+  const loadMessages = useCallback(async () => {
+    const response = await fetch(FAN_MESSAGES_API_URL);
+    if (!response.ok) throw new Error('Unable to load messages');
+    const { messages: savedMessages } = await response.json();
+    if (Array.isArray(savedMessages)) setMessages(savedMessages);
   }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const message = inputMsg.trim();
-    if (!message || !effectsRootRef.current || !danmakuRef.current || !inputRef.current) return;
+  useEffect(() => {
+    loadMessages().catch(() => undefined);
+    const timer = window.setInterval(() => loadMessages().catch(() => undefined), 30000);
+    return () => window.clearInterval(timer);
+  }, [loadMessages]);
 
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken('');
+    setSubmitError('\u4eba\u673a\u9a8c\u8bc1\u52a0\u8f7d\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002');
+  }, []);
+
+  const triggerFlight = (message) => {
+    if (!effectsRootRef.current || !danmakuRef.current || !inputRef.current) return;
     const effectsRoot = effectsRootRef.current.getBoundingClientRect();
     const input = inputRef.current.getBoundingClientRect();
     const danmakuWall = danmakuRef.current.getBoundingClientRect();
@@ -106,15 +163,47 @@ export default function FanWallSection() {
     const centerX = input.left - effectsRoot.left + input.width * 0.5;
     setFlight({ id: flightId, startX: centerX, startY: input.top - effectsRoot.top + input.height * 0.5, targetY: danmakuWall.top - effectsRoot.top + danmakuWall.height * 0.36 });
     window.setTimeout(() => setFlight((current) => current?.id === flightId ? null : current), 5000);
-    fetch('/api/fan-messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: message }),
-    }).catch(() => undefined);
-    setMessages((current) => [{ createdAt: new Date().toISOString(), content: message }, ...current].slice(0, 200));
-    setInputMsg('');
-    setSubmitted(true);
-    window.setTimeout(() => setSubmitted(false), 2000);
+    setMessages((current) => [message, ...current.filter((item) => item.id !== message.id)].slice(0, 200));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const message = inputMsg.trim();
+    if (!message || submitting) return;
+
+    if (USES_HOSTED_FAN_API && !TURNSTILE_SITE_KEY) {
+      setSubmitError('\u7559\u8a00\u529f\u80fd\u6b63\u5728\u914d\u7f6e\u4e2d\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5\u3002');
+      return;
+    }
+
+    if (USES_HOSTED_FAN_API && !turnstileToken) {
+      setSubmitError('\u8bf7\u5148\u5b8c\u6210\u4eba\u673a\u9a8c\u8bc1\u3002');
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const response = await fetch(FAN_MESSAGES_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: message, turnstileToken }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.message) throw new Error(payload.error || 'Unable to save message');
+
+      triggerFlight(payload.message);
+      setInputMsg('');
+      setSubmitted(true);
+      setTurnstileToken('');
+      setTurnstileResetKey((current) => current + 1);
+      window.setTimeout(() => setSubmitted(false), 2000);
+    } catch (error) {
+      setSubmitError(error.message || '\u7559\u8a00\u53d1\u5e03\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5\u3002');
+      if (USES_HOSTED_FAN_API) setTurnstileResetKey((current) => current + 1);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -136,11 +225,13 @@ export default function FanWallSection() {
               <form onSubmit={handleSubmit} className="fanwall-form flex items-center gap-3 max-w-2xl mx-auto">
                 <label className="sr-only" htmlFor="fan-message">{'\u5199\u4e0b\u60f3\u8bf4\u7684\u8bdd'}</label>
                 <div className="message-input-glow">
-                  <textarea ref={inputRef} id="fan-message" value={inputMsg} onChange={(event) => setInputMsg(event.target.value)} placeholder={'\u5199\u4e0b\u60f3\u8bf4\u7684\u8bdd...'} className="message-input" maxLength={1000} />
+                  <textarea ref={inputRef} id="fan-message" value={inputMsg} onChange={(event) => setInputMsg(event.target.value)} placeholder={'\u5199\u4e0b\u60f3\u8bf4\u7684\u8bdd...'} className="message-input" maxLength={500} disabled={submitting} />
                 </div>
-                <button type="submit" className="h-12 px-6 bg-gradient-to-r from-warm-500 to-warm-400 text-white text-sm rounded-full font-medium hover:shadow-lg hover:shadow-warm-200/50 transition-all duration-300 active:scale-95">{'\u53d1\u9001'}</button>
+                <TurnstileWidget siteKey={USES_HOSTED_FAN_API ? TURNSTILE_SITE_KEY : ''} resetKey={turnstileResetKey} onToken={setTurnstileToken} onError={handleTurnstileError} />
+                <button type="submit" disabled={submitting} className="h-12 px-6 bg-gradient-to-r from-warm-500 to-warm-400 text-white text-sm rounded-full font-medium hover:shadow-lg hover:shadow-warm-200/50 transition-all duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60">{submitting ? '\u53d1\u5e03\u4e2d...' : '\u53d1\u9001'}</button>
               </form>
               {submitted && <p className="text-center text-xs text-warm-600 mt-3 animate-fade-in">{'\u611f\u8c22\u4f60\u7684\u7559\u8a00\uff01'}</p>}
+              {submitError && <p className="text-center text-xs text-red-500 mt-3" role="alert">{submitError}</p>}
               <p className="text-center text-xs text-gray-500 mt-3">{'\u5df2\u6709 '}{messages.length}{' \u6761\u6e29\u6696\u7559\u8a00'}</p>
             </div>
             <ParticleFlight flight={flight} />

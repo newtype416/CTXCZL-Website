@@ -49,6 +49,9 @@ jobs:
           fi
 
       - name: Build
+        env:
+          VITE_FAN_MESSAGES_API_URL: ${{ vars.VITE_FAN_MESSAGES_API_URL }}
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
         run: pnpm build -- --base="${{ steps.base.outputs.path }}"
 
       - name: Configure Pages
