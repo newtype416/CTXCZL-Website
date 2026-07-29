@@ -73,7 +73,7 @@ export default function HeroSection({ playWithSound = false }) {
         <button
           onClick={toggleAudio}
           className="absolute bottom-8 right-8 z-20 w-12 h-12 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/25 transition-all duration-300 border border-white/20 hover:scale-105"
-          title={muted ? '????' : '????'}
+          title={muted ? '开启音乐' : '关闭音乐'}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             {muted ? (

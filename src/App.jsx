@@ -142,7 +142,7 @@ export default function App() {
           <span aria-hidden="true">✉</span>
         </button>
       )}
-      {entered && <DesktopPet />}
+      <DesktopPet />
     </div>
   );
 }
