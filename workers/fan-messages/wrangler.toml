@@ -1,11 +1,11 @@
-﻿name = "ctxczl-fan-messages"
+name = "ctxczl-fan-messages"
 main = "src/index.js"
 compatibility_date = "2026-07-29"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "ctxczl-fan-messages"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "e053d24e-6967-47ee-993a-406783e3bc56"
 
 [vars]
 ALLOWED_ORIGINS = "http://localhost:3000,http://localhost:3001,https://newtype416.github.io"

@@ -27,19 +27,7 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const video = document.createElement('video');
-    video.preload = 'auto';
-    video.muted = true;
-    video.playsInline = true;
-    video.src = assetUrl('/video/hero.mp4');
-    video.load();
 
-    return () => {
-      video.removeAttribute('src');
-      video.load();
-    };
-  }, []);
 
   const handleEnter = () => {
     setShowLanding(false);
@@ -127,7 +115,7 @@ export default function App() {
           <span aria-hidden="true">✉</span>
         </button>
       )}
-      <DesktopPet />
+      {entered && <DesktopPet />}
     </div>
   );
 }

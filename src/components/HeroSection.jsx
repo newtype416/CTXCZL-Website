@@ -48,17 +48,18 @@ export default function HeroSection() {
   return (
     <section id="hero" className="hero-section relative h-screen w-full overflow-hidden">
       {/* Video background with sound enabled after entering the site. */}
-      <video preload="auto"
+      <video preload="metadata"
         ref={videoRef}
         autoPlay
         muted={muted}
         playsInline
         disablePictureInPicture
         controlsList="nofullscreen nodownload noremoteplayback"
+        poster={assetUrl('/images/home/hero-poster.jpg')}
         className="absolute inset-0 h-full w-full object-cover"
         onEnded={handleVideoEnded}
       >
-        <source src={assetUrl('/video/hero.mp4')} type="video/mp4" />
+        <source src={assetUrl('/video/hero.mp4?v=media-optimized')} type="video/mp4" />
       </video>
  
       {/* Scroll indicator */}

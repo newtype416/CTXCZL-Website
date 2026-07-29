@@ -24,9 +24,11 @@ export default function LandingPage({ onEnter }) {
         muted
         loop
         playsInline
+        preload="metadata"
+        poster={assetUrl('/images/home/splash-poster.jpg')}
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src={assetUrl('/video/splash.mp4')} type="video/mp4" />
+        <source src={assetUrl('/video/splash.mp4?v=media-optimized')} type="video/mp4" />
       </video>
 
       {/* Overlay */}

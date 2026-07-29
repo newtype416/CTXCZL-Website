@@ -52,11 +52,11 @@ export default function ProfileCard({
         >
           <div className="profile-card__glow" />
           <span className="profile-card__hover-hint" aria-hidden="true">Click~</span>
-          <img className="profile-card__avatar" src={avatarUrl} alt={`${name}\u5361\u7247`} />
+          <img className="profile-card__avatar" src={avatarUrl} alt={`${name}\u5361\u7247`} loading="lazy" decoding="async" />
           <div className="profile-card__wash" />
           <div className="profile-card__topline">
             <div className="profile-card__identity">
-              <img src={miniAvatarUrl} alt="" className="profile-card__mini-avatar" />
+              <img src={miniAvatarUrl} alt="" className="profile-card__mini-avatar" loading="lazy" decoding="async" />
               <div>
                 <strong>@{handle}</strong>
                 <span>{status}</span>
