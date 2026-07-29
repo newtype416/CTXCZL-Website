@@ -3,6 +3,7 @@ import SplitText from './SplitText';
 import { motion } from 'motion/react';
 import ProfileCard from './ProfileCard';
 import Particles from './Particles';
+import { assetUrl } from '../utils/assets';
 
 // ÿ�����������´��䣻���ɵ�������֮��
 const floatingTags = [
@@ -30,8 +31,8 @@ const socialLinks = [
     status: '一位正在努力的小演员',
     color: '#E6162D',
     url: 'https://weibo.com/u/6871895822',
-    iconImage: '/images/about/weibo.jpg',
-    cardImage: '/images/about/weibo-card.jpg',
+    iconImage: assetUrl('/images/about/weibo.jpg'),
+    cardImage: assetUrl('/images/about/weibo-card.jpg'),
     delay: 0.15,
     style: { left: '2%', top: 'calc(53% + 10px)', rotate: -3 },
   },
@@ -41,8 +42,8 @@ const socialLinks = [
     status: '演员道路上的小学生',
     color: '#111111',
     url: 'https://v.douyin.com/4VKw4PJDLnc/',
-    iconImage: '/images/about/douyin.jpg',
-    cardImage: '/images/about/douyin-card.png',
+    iconImage: assetUrl('/images/about/douyin.jpg'),
+    cardImage: assetUrl('/images/about/douyin-card.png'),
     delay: 0.25,
     style: { left: '50%', top: 'calc(57% + 10px)', rotate: 2, xCenter: true },
   },
@@ -52,8 +53,8 @@ const socialLinks = [
     status: '演员 陈添祥',
     color: '#FE2C55',
     url: 'https://xhslink.cn/m/57vZycMxaHa',
-    iconImage: '/images/about/xiaohongshu.jpg',
-    cardImage: '/images/about/xiaohongshu-card.jpg',
+    iconImage: assetUrl('/images/about/xiaohongshu.jpg'),
+    cardImage: assetUrl('/images/about/xiaohongshu-card.jpg'),
     delay: 0.35,
     style: { right: '2%', top: 'calc(51% + 10px)', rotate: 4 },
   },
@@ -189,7 +190,7 @@ export default function AboutSection() {
               <div className="absolute -inset-6 -z-10 rounded-full bg-warm-300/25 blur-2xl" />
               <div className="absolute -inset-12 -z-20 rounded-full bg-warm-200/20 blur-3xl" />
               <motion.img
-                src="/images/about/portrait.png"
+                src={assetUrl('/images/about/portrait.png')}
                 alt="陈添祥"
                 className="h-[800px] w-[400px] max-w-[400px] object-contain object-center drop-shadow-[0_30px_50px_rgba(230,96,26,0.28)]"
                 whileHover={{ scale: 1.2 }}
@@ -219,7 +220,7 @@ export default function AboutSection() {
             >
               <div className="absolute -inset-4 -z-10 rounded-full bg-warm-300/25 blur-2xl" />
               <motion.img
-                src="/images/about/portrait.png"
+                src={assetUrl('/images/about/portrait.png')}
                 alt="???"
                 className="h-[360px] w-auto max-w-full object-contain object-center drop-shadow-[0_24px_36px_rgba(230,96,26,0.22)] sm:h-[410px]"
                 loading="lazy"

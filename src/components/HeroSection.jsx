@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { assetUrl } from '../utils/assets';
  
 export default function HeroSection() {
   const [muted, setMuted] = useState(true);
@@ -57,7 +58,7 @@ export default function HeroSection() {
         className="absolute inset-0 h-full w-full object-cover"
         onEnded={handleVideoEnded}
       >
-        <source src="/video/hero.mp4" type="video/mp4" />
+        <source src={assetUrl('/video/hero.mp4')} type="video/mp4" />
       </video>
  
       {/* Scroll indicator */}

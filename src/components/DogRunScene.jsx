@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Camera, GLTFLoader, Program, Renderer, Transform, Vec3 } from 'ogl';
+import { assetUrl } from '../utils/assets';
 
 const vertex = `
   precision highp float;
@@ -71,7 +72,7 @@ export default function DogRunScene({ followPointer = false, jumpTrigger = 0 }) 
 
     let modelReady = false;
     let disposed = false;
-    GLTFLoader.load(gl, '/models/border-collie.glb').then((gltf) => {
+    GLTFLoader.load(gl, assetUrl('/models/border-collie.glb')).then((gltf) => {
       if (disposed) return;
       gltf.scene.forEach((node) => node.setParent(dog));
       gltf.meshes.forEach(({ primitives }) => {

@@ -12,6 +12,7 @@ import ContactSection from './components/ContactSection';
 import Particles from './components/Particles';
 import DesktopPet from './components/DesktopPet';
 import ArrivalLetter from './components/ArrivalLetter';
+import { assetUrl } from './utils/assets';
 
 export default function App() {
   const [entered, setEntered] = useState(false);
@@ -31,7 +32,7 @@ export default function App() {
     video.preload = 'auto';
     video.muted = true;
     video.playsInline = true;
-    video.src = '/video/hero.mp4';
+    video.src = assetUrl('/video/hero.mp4');
     video.load();
 
     return () => {

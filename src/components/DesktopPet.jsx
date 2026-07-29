@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import DogRunScene from './DogRunScene';
+import { assetUrl } from '../utils/assets';
 
 const PET_WIDTH = 190;
 const PET_HEIGHT = 218;
@@ -13,7 +14,7 @@ function initialPosition() {
   };
 }
 
-const BARK_SOUND_URL = '/audio/dog-bark.mp3';
+const BARK_SOUND_URL = assetUrl('/audio/dog-bark.mp3');
 
 function bark() {
   [0, 240].forEach((delay) => {

@@ -2,6 +2,7 @@
 import VariableProximity from './VariableProximity';
 import TextPressure from './TextPressure';
 import ShinyText from './ShinyText';
+import { assetUrl } from '../utils/assets';
  
 export default function LandingPage({ onEnter }) {
   const containerRef = useRef(null);
@@ -25,7 +26,7 @@ export default function LandingPage({ onEnter }) {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/video/splash.mp4" type="video/mp4" />
+        <source src={assetUrl('/video/splash.mp4')} type="video/mp4" />
       </video>
 
       {/* Overlay */}
